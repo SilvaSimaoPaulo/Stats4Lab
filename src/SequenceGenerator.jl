@@ -1,3 +1,4 @@
+
 """
 Generates all possible permutations of ``nl`` alements of type A and ``nr`` elements of type B using a binary tree. It has a struct *Permutations* to store all intermediate sequences and an global array of vectors *sequences* to store the final sequences. The tree has a 2ᴺ size, so use this module with small numbers.
 """
