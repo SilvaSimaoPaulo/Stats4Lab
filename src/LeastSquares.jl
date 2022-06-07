@@ -2,15 +2,22 @@
 module LeastSquares
 using LinearAlgebra
 
-export χ², scan, fitLinear, fitGaussNewton!
+export χ², scan, fitLinear, fitGaussNewton! # 0800 724 2102 Itaú consignado, protocolo 79642878
 
 """
-	(mFunc::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, mParam::Real)
+	(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Any) 
 Auxiliary function to compute ``χ²=Σ(yᵢ-f(xᵢ,A))²/σ²``
 """
-χ²(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Union{Real, Vector{<:Real}}) =
+χ²(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Any) =
 	sum(((y[i] - f(x[i], A)) / σ[i]) ^ 2 for i=1:length(x))
-	
+
+"""
+	(f::Function, x::Matrix{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Any)
+Auxiliary function to compute ``χ²=Σ(yᵢ-f(xᵢ,A))²/σ²`` for more than one variable
+"""
+χ²(f::Function, x::Matrix{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Any) = 
+	sum(((y[i] - f(x[i,:], A)) / σ[i]) ^ 2 for i=1:length(y))
+
 """
 	(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, mParam1::Real, mParam2::Real, N::Integer)
 Perform a *χ²* scan for one parameter *a* in the range *mParam1* to *mParam2* using *N* points given function *f* and the vectors *x* and *y* such that ``y=f(x,a)+ϵ``. It returns the the best *a* that minimizes ``χ²`` and the complete *a* and ``χ²`` curve as a matrix with the *a* values in the first row and the ``χ²`` in the second one.
@@ -25,7 +32,8 @@ end
 	(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, mParam1::Real, mParam2::Real, N::Integer)
 Perform a *χ²* scan for one parameter *a* in the range *mParam1* to *mParam2* using *N* points given function *f* and the vectors *x* and *y* such that ``y=f(x,a)+ϵ``. It returns the the best *a* that minimizes ``χ²`` and the complete *a* and ``χ²`` curve as a matrix with the *a* values in the first row and the ``χ²`` in the second one.
 """
-function scan2D(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Matrix{Tuple{Real, Real}})
+function scan2D(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Matrix{Tuple{T, T}} where T <: Real)
+	#dims = size(A)
 	s² = [χ²(f, x, y, σ, p) for p=A]
 	s²min, index = findmin(s²)
 	return A[index[1], index[2]], s²

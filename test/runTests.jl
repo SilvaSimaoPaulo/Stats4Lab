@@ -1,6 +1,7 @@
 import Stats4Lab.RandomizedTests as RT
 import Stats4Lab.LeastSquares as LS
 import Distributions as Dists
+using UnicodePlots
 
 println("-"^79)
 println("RndomizedTests")
@@ -81,3 +82,16 @@ f = [x ones(6)]
 V, A = LS.fitLinear(f, y, 100 .* ones(6))
 println("Parameters: $(A)")
 println("Covariance matrix: $(V)")
+
+println("\n--->scan2D")
+x0 = [0.34, 0.34, 0.58, 1.26, 1.26, 1.82]
+x1 = [0.73, 0.73, 0.69, 0.97, 0.97, 0.46]
+y = [5.75, 4.79, 5.44, 9.09, 8.59, 5.09]
+x = [x0 x1]
+r1 = collect(1.10:0.005:1.30)
+r2 = collect(7.01:0.005:7.21)
+A0 = [(u, v) for u=r1, v=r2]
+A, s² = LS.scan2D((x,A)->A[1]*x[1]+A[2]*x[2], x, y, ones(6), A0)
+print("\n", heatmap(s², xoffset=1.10, yoffset=7.01, xfact=0.005, yfact=0.005), "\n")
+println("$(A)")
+size(s²)
