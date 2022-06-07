@@ -1,5 +1,6 @@
 import Stats4Lab.RandomizedTests as RT
 import Stats4Lab.LeastSquares as LS
+import Stats4Lab.ANORE
 import Distributions as Dists
 using UnicodePlots
 
@@ -94,4 +95,36 @@ A0 = [(u, v) for u=r1, v=r2]
 A, s² = LS.scan2D((x,A)->A[1]*x[1]+A[2]*x[2], x, y, ones(6), A0)
 print("\n", heatmap(s², xoffset=1.10, yoffset=7.01, xfact=0.005, yfact=0.005), "\n")
 println("$(A)")
-size(s²)
+
+println("--->fitLinear (one parameter, weighted)")
+L = [0.671, 0.590, 0.522, 0.439, 0.370] .- 0.02
+t = [
+	8.09 8.06 8.20 8.08 8.22;
+	7.65 7.61 7.68 7.57 7.66;
+	7.13 7.12 7.06 7.18 7.07;
+	6.46 6.48 6.46 6.48 6.45;
+	6.00 5.81 6.03 5.89 5.99
+] ./ 5
+T = Vector{Float64}(vec(transpose(t)))
+dims =  size(t)
+σT = (0.35 / 5) .* ones(dims[1] * dims[2]) #tempo de reação médio de uma pessoa, ver https://www.laboratoriovirtual.fisica.ufc.br/tempodereacao
+L = kron(L, ones(dims[2]))
+println("Ajustando os dados...")
+x = sqrt.(L)
+w = map(x->1.0/x^2, σT)
+x = x .- Dists.mean(x)
+T = T .- Dists.mean(T)
+t = t .- Dists.mean(t)
+σk, k = LS.fitLinear(x, T, w)
+println("k = $(k) ± $(σk)")
+
+println("--->lackOfFitTest")
+TCalc = k .* x
+R = T .- TCalc
+ANORE.lackOfFitTest(t, R, 1)
+
+println("--->anore")
+a = ANORE.anore(R, T, TCalc, "L", "T")
+a.drawPlots()
+r² = 1 - Dists.var(R) / Dists.var(T)
+

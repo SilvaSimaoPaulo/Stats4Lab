@@ -19,8 +19,8 @@ Auxiliary function to compute ``χ²=Σ(yᵢ-f(xᵢ,A))²/σ²`` for more than o
 	sum(((y[i] - f(x[i,:], A)) / σ[i]) ^ 2 for i=1:length(y))
 
 """
-	(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, mParam1::Real, mParam2::Real, N::Integer)
-Perform a *χ²* scan for one parameter *a* in the range *mParam1* to *mParam2* using *N* points given function *f* and the vectors *x* and *y* such that ``y=f(x,a)+ϵ``. It returns the the best *a* that minimizes ``χ²`` and the complete *a* and ``χ²`` curve as a matrix with the *a* values in the first row and the ``χ²`` in the second one.
+	(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Vector{<:Real})
+Perform a *χ²* scan in the range *A* given the function *f* of *x* and one parameter *A*, such that ``y=f(x,a)+ϵ``. It returns the the best *A* that minimizes ``χ²`` and the complete ``χ²`` matrix.
 """
 function scan(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Vector{<:Real})
 	s² = [χ²(f, x, y, σ, p) for p=A]
@@ -29,8 +29,8 @@ function scan(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Re
 end
 
 """
-	(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, mParam1::Real, mParam2::Real, N::Integer)
-Perform a *χ²* scan for one parameter *a* in the range *mParam1* to *mParam2* using *N* points given function *f* and the vectors *x* and *y* such that ``y=f(x,a)+ϵ``. It returns the the best *a* that minimizes ``χ²`` and the complete *a* and ``χ²`` curve as a matrix with the *a* values in the first row and the ``χ²`` in the second one.
+	(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Matrix{Tuple{T, T}} where T <: Real)
+Perform a *χ²* scan in the matrix of parameters *A* given the function *f* and the vectors *x* and *y* such that ``y=f(x,A)+ϵ``. It returns the the best *A* that minimizes ``χ²`` and the complete ``χ²`` matrix.
 """
 function scan2D(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Matrix{Tuple{T, T}} where T <: Real)
 	#dims = size(A)
@@ -40,11 +40,11 @@ function scan2D(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:R
 end
 
 """
-(f::Matrix{<:Real}, y::Vector{<:Real})
-Faz o ajuste de uma função y = a1 × f1 + a2 × f2 + ... + ap × fp que seja linar nos parâmetros a1, a2, ..., ap, ainda que as funções f1, f2, ..., fp de uma ou mais variáveis independentes não seja linear.
-* f é uma matriz de dimensões n×p na qual cada coluna é constituída dos valores de fp calculadas para cada um dos n valores da(s) variável(is) independente(s);
-* y é um vetor contendo os valores da variável dependente e;
-São retornados a matriz de covariância M e o vetor A com os valores dos parâmetros ajustados.
+	(f::Matrix{<:Real}, y::Vector{<:Real})
+Computes the least-squares fit of ``y = a1 × f1 + a2 × f2 + ... + ap × fp`` where ``a1, a2, ..., ap`` are parameters and ``f1, f2, ..., fp`` functions of one or more independent variables.
+* ``f`` is the design matrix;
+* ``y`` is the target variable vector;
+The covariance matrix ``M`` and the parameters vector ``A`` are returned.
 """
 function fitLinear(f::Matrix{<:Real}, y::Vector{<:Real})
 	dims = size(f)
@@ -65,12 +65,8 @@ end
 precompile(fitLinear, (Matrix, Vector))
 
 """
-(f::Matrix{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real})
-Faz o ajuste de uma função y = a1 × f1 + a2 × f2 + ... + ap × fp que seja linar nos parâmetros a1, a2, ..., ap, ainda que as funções f1, f2, ..., fp de uma ou mais variáveis independentes não seja linear.
-* f é uma matriz de dimensões n×p na qual cada coluna é constituída dos valores de fp calculadas para cada um dos n valores da(s) variável(is) independente(s);
-* y é um vetor contendo os valores da variável dependente e;
-* w é um vetor com os pesos a serem usados, normalmente o inverso do quadrado das incertezas.
-São retornadas a matriz de covariância M e o vetor A com os valores dos parâmetros ajustados.
+	(f::Matrix{<:Real}, y::Vector{<:Real}, w::Vector{<:Real})
+Same as above, with weights ``w``.
 """
 function fitLinear(f::Matrix{<:Real}, y::Vector{<:Real}, w::Vector{<:Real})
 	dims = size(f)
@@ -86,6 +82,7 @@ end
 precompile(fitLinear, (Matrix, Vector, Vector))
 
 """
+	(x::Vector{<:Real}, y::Vector{<:Real})
 The same as above, but for only one parameter.
 """
 function fitLinear(x::Vector{<:Real}, y::Vector{<:Real})
@@ -95,11 +92,12 @@ end
 precompile(fitLinear, (Vector, Vector))
 
 """
-The same as above, with weights.
+	(x::Vector{<:Real}, y::Vector{<:Real}, w::Vector{<:Real})
+The same as above, with weights ``w``.
 """
 function fitLinear(x::Vector{<:Real}, y::Vector{<:Real}, w::Vector{<:Real})
-	x = [x[i] * sqrt(w[i]) for i=1:nPoints]
-	y = [y[i] * sqrt(w[i]) for i=1:nPoints]
+	x = x .* sqrt.(w)
+	y = y .* sqrt.(w)
 	fitLinear(x, y)
 end
 precompile(fitLinear, (Vector, Vector, Vector))

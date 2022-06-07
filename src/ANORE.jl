@@ -26,19 +26,18 @@ The constructor has the following arguments:
 struct anore #analysis of residuals
 	R::Vector{<:Real}
 	plotR::Any
-	plotBox::Any
+	plotD::Any
 	plotSL::Any
 	plotRF::Any
 	plotN::Any
 	drawPlots::Function
 	anore(R::Vector{<:Real}, x::Vector{<:Real}, yCalc::Vector{<:Real}, xname::String, yname::String) = begin
 		#Residuals
-		plotR = UnicodePlots.scatterplot(x, R, title="residuals", xlabel=xname, ylabel="R", marker="∘", width=80, height=24, canvas=UnicodePlots.DotCanvas)
-		plotBox = UnicodePlots.boxplot(R, title="residuals boxplot")
+		plotR = UnicodePlots.scatterplot(x, R, title="residuals", xlabel=xname, ylabel="R", marker="∘", width=60, height=18, canvas=UnicodePlots.DotCanvas)
 
 		#S-L plot
 		ϵ = sqrt.(abs.(R))
-		plotSL = UnicodePlots.scatterplot(yCalc, ϵ, title="S-L plot", xlabel=yname, ylabel="√|R|", marker="∘", width=80, height=24, canvas=UnicodePlots.DotCanvas)
+		plotSL = UnicodePlots.scatterplot(yCalc, ϵ, title="S-L plot", xlabel=yname, ylabel="√|R|", marker="∘", width=60, height=18, canvas=UnicodePlots.DotCanvas)
 
 		#R-F plot
 		resQuantiles = sort(R)
@@ -48,26 +47,29 @@ struct anore #analysis of residuals
 		fitQuantiles = Dists.quantile(fitSpread, fValues)
 		ymin = min(minimum(resQuantiles), minimum(fitQuantiles))
 		ymax = max(maximum(resQuantiles), maximum(fitQuantiles))
-		plotRF = UnicodePlots.scatterplot(fValues, resQuantiles, title="R-F plot", xlabel="f-values", ylabel="quantiles", marker="∘", name = "∘ R", color=:green, ylim=(ymin, ymax), width=80, height=24, canvas=UnicodePlots.DotCanvas)
+		plotRF = UnicodePlots.scatterplot(fValues, resQuantiles, title="R-F plot", xlabel="f-values", ylabel="quantiles", marker="∘", name = "∘ R", color=:green, ylim=(ymin, ymax), width=60, height=18, canvas=UnicodePlots.DotCanvas)
 		UnicodePlots.scatterplot!(plotRF, fValues, fitQuantiles, color=:red, marker="×", name="× "*yname)
 
 		#Normal quantiles
 		μ = Dists.mean(R)
 		σ = Dists.std(R)
 		normQuantiles = Dists.quantile(Dists.Normal(μ, σ), fValues)
-		plotN = UnicodePlots.scatterplot(normQuantiles, resQuantiles, title="Normal q-q plot", xlabel="Normal quantiles", ylabel="R", marker="∘", width=80, heigth=24, canvas=UnicodePlots.DotCanvas)
+		plotN = UnicodePlots.scatterplot(normQuantiles, resQuantiles, title="Normal q-q plot", xlabel="Normal quantiles", ylabel="R", marker="∘", width=60, height=18, canvas=UnicodePlots.DotCanvas)
 		UnicodePlots.lineplot!(plotN, 0., 1., color=:red)
 
+		#autocorrelation
+		plotD = UnicodePlots.densityplot(R[1:nPoints-1], R[2:end], xlabel="Rᵢ", ylabel="Rᵢ₊₁", title="residuals lag-1 autocorrelation", width=60, height=18)
+		
 		#Draw the plots
 		drawPlots() = begin
-			for plt in [plotR, plotBox, plotSL, plotRF, plotN]
+			for plt in [plotR, plotD, plotSL, plotRF, plotN]
 				print(stdout, "\n")
 				print(stdout, plt)
 				print(stdout, "\n")
 			end
 			return nothing
 		end
-		return new(R, plotR, plotBox, plotSL, plotRF, plotN, drawPlots)
+		return new(R, plotR, plotD, plotSL, plotRF, plotN, drawPlots)
 	end
 end
 
