@@ -36,8 +36,8 @@ function scan2D(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:R
 	#dims = size(A)
 	s² = [χ²(f, x, y, σ, p) for p=A]
 	s²min, index = findmin(s²)
-	P = A[index[1], index[2]]
-	return [P[1], P[2]], s²
+	P = A[index[1], index[2]] 
+	return [P[1], P[2]], s² #return a vector instead of tuple
 end
 
 """
