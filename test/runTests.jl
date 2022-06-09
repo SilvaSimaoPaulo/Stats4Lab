@@ -94,7 +94,7 @@ r2 = collect(7.01:0.005:7.21)
 A0 = [(u, v) for u=r1, v=r2]
 A, s² = LS.scan2D((x,A)->A[1]*x[1]+A[2]*x[2], x, y, ones(6), A0)
 print("\n", heatmap(s², xoffset=1.10, yoffset=7.01, xfact=0.005, yfact=0.005), "\n")
-println("$(A)")
+println("$(typeof(A))")
 
 println("--->fitLinear (one parameter, weighted)")
 L = [0.671, 0.590, 0.522, 0.439, 0.370] .- 0.02
