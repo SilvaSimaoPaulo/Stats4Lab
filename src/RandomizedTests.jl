@@ -7,7 +7,7 @@ import Statistics as Stats
 
 """
 	(A::Vector{<:Real}, B::Vector{<:Real})
-Randomized test to compare the means of the samples ``A`` and ``B``. It returns the significance (right tail p-value) assuming the null hypothesis that the difference of the means is zero.
+Randomized test to compare the means of the samples `A` and `B`. It returns the significance (right tail p-value) assuming the null hypothesis that the difference of the means is zero.
 """
 function twoSamplesMeanTest(A::Vector{<:Real}, B::Vector{<:Real})
 	nᴬ, nᴮ = UInt8(length(A)), UInt8(length(B))
@@ -42,7 +42,7 @@ end
 
 """
 	(t::Vector{Tuple{Real, Real}}, d⁰)
-Randomized paired test of the pairs *t* whose measurements were performed under the conditions *a* and *b*. It returns the significance (right tail p-value) assuming the null hypothesis that the average difference between *a* and *b* is zero.
+Randomized paired test of the pairs `t` whose measurements were performed under the conditions `a` and `b`. It returns the significance (right tail p-value) assuming the null hypothesis that the average difference between `a` and `b` is zero.
 """
 function pairedTest(t::Vector{NamedTuple{(:a, :b), Tuple{T, T}}} where T <: Real)
 	l = length(t)

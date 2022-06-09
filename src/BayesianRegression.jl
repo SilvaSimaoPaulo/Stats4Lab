@@ -7,11 +7,11 @@ using LinearAlgebra
 
 """
 	(ϕ::Matrix{<:Real}, m::Vector{<:Real}, S::Matrix{<:Real}, σ²::Real)
-Computes the probability ``p(y|x)``, where ``y = m₁ϕ₁(x₁) + m₂ϕ₂(x₂) + ... + mₖϕₖ(xₖ)`` given:
-* ``ϕ = (ϕ₁(x₁), ..., ϕₖ(xₖ))``
-* the initial parameter set ``m = (m₁, ..., mₖ)``
-* the covariance matrix ``S`` of the parameters ``m`` and;
-* ``σ² = Var[y]``.
+Computes the probability `p(y|x)`, where `y = m₁ϕ₁(x₁) + m₂ϕ₂(x₂) + ... + mₖϕₖ(xₖ)` given:
+- `ϕ = (ϕ₁(x₁), ..., ϕₖ(xₖ))`
+- the initial parameter set `m = (m₁, ..., mₖ)`
+- the covariance matrix `S` of the parameters `m` and;
+- `σ² = Var[y]`.
 """
 function priorPrediction(ϕ::Array{<:Real}, m₀::Vector{<:Real}, S₀::Matrix{<:Real}, σ²::Real)
 	ϕᵀ = tranpose(ϕ)
@@ -23,7 +23,7 @@ end
 
 """
 	(Φ::Array{<:Real}, y::Vector{<:Real}, m₀::Vector{<:Real}, S₀::Array{<:Real}, σ²::Real)
-Posterior probability ``p(θ|X,Y) = N(θ|mₙ,Sₙ)``, ``Sₙ= (S₀⁻¹+σ⁻²ΦᵀΦ)⁻¹``, ``mₙ = Sₙ(S₀⁻¹m₀+σ⁻²Φᵀy)``
+Posterior probability `p(θ|X,Y) = N(θ|mₙ,Sₙ)`, `Sₙ= (S₀⁻¹+σ⁻²ΦᵀΦ)⁻¹`, `mₙ = Sₙ(S₀⁻¹m₀+σ⁻²Φᵀy)`
 """
 function posteriorProbability(Φ::Array{<:Real}, y::Vector{<:Real}, m₀::Vector{<:Real}, S₀::Array{<:Real}, σ²::Real)
 	S₀⁻¹ = inv(S₀)

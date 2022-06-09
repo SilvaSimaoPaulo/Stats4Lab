@@ -1,11 +1,11 @@
 """
 **an**alysis **o**f **re**siduals
 
-It contains a struct that stores the residuals ``R`` of a least-squares or loess fit and calculate and stores the plots:
-* a scatter plot of ``R`` Vs ``x``, the independent variable;
-* a boxplot of ``R``;
-* the spread-location (S-L) plot;
-* the residuals-fit (R-F) spread plot
+It contains a struct that stores the residuals `R` of a least-squares or loess fit and calculate and stores the plots:
+- a scatter plot of `R` Vs `x`, the independent variable;
+- a boxplot of `R`;
+- the spread-location (S-L) plot;
+- the residuals-fit (R-F) spread plot
 """
 module ANORE
 import UnicodePlots
@@ -16,12 +16,12 @@ using Printf
 	(R::Vector{Real}, x::Vector{<:Real}, yCalc::Vector{<:Real}, xname::String, yname::String)
 
 The constructor has the following arguments:
-* The residuals ``R``
-* The independent variable ``x``
-* The calculated dependent variable ``yCalc``
-* The independent variable name ``xname``
-* The dependent variable name ``yname``
-* A function ``drawPlots`` that plots a vector of plots
+- The residuals `R`
+- The independent variable `x`
+- The calculated dependent variable `yCalc`
+- The independent variable name `xname`
+- The dependent variable name `yname`
+- A function `drawPlots` that plots a vector of plots
 """
 struct anore #analysis of residuals
 	R::Vector{<:Real}
@@ -76,9 +76,9 @@ end
 """
 	(T::Matrix{<:Real}, R::Vector{<:Real}, nParams::Integer)
 Lack of fit test for repeated measurements.
-* T is a matrix of dependent variable values where each row stores the values obtained under the same conditions;
-* R is the vector containing the residuals;
-* nParams is the number of parameters.
+- `T` is a matrix of dependent variable values where each row stores the values obtained under the same conditions;
+- `R` is the vector containing the residuals;
+- `nParams` is the number of parameters.
 """
 function lackOfFitTest(T::Matrix{<:Real}, R::Vector{<:Real}, nParams::Integer)
 	dims = size(T)

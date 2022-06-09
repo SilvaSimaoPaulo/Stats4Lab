@@ -6,21 +6,21 @@ export χ², scan, fitLinear, fitGaussNewton! # 0800 724 2102 Itaú consignado, 
 
 """
 	(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Any) 
-Auxiliary function to compute ``χ²=Σ(yᵢ-f(xᵢ,A))²/σ²``
+Auxiliary function to compute `χ²=Σ(yᵢ-f(xᵢ,A))²/σ²`
 """
 χ²(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Any) =
 	sum(((y[i] - f(x[i], A)) / σ[i]) ^ 2 for i=1:length(x))
 
 """
 	(f::Function, x::Matrix{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Any)
-Auxiliary function to compute ``χ²=Σ(yᵢ-f(xᵢ,A))²/σ²`` for more than one variable
+Auxiliary function to compute `χ²=Σ(yᵢ-f(xᵢ,A))²/σ²` for more than one variable
 """
 χ²(f::Function, x::Matrix{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Any) = 
 	sum(((y[i] - f(x[i,:], A)) / σ[i]) ^ 2 for i=1:length(y))
 
 """
 	(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Vector{<:Real})
-Perform a *χ²* scan in the range *A* given the function *f* of *x* and one parameter *A*, such that ``y=f(x,a)+ϵ``. It returns the the best *A* that minimizes ``χ²`` and the complete ``χ²`` matrix.
+Perform a `χ²` scan in the range `A` given the function `f` of `x` and one parameter `A`, such that ``y=f(x,a)+ϵ``. It returns the the best *A* that minimizes `χ²` and the complete `χ²` matrix.
 """
 function scan(f::Function, x::Vector{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Vector{<:Real})
 	s² = [χ²(f, x, y, σ, p) for p=A]
@@ -30,7 +30,7 @@ end
 
 """
 	(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Matrix{Tuple{T, T}} where T <: Real)
-Perform a *χ²* scan in the matrix of parameters *A* given the function *f* and the vectors *x* and *y* such that ``y=f(x,A)+ϵ``. It returns the the best *A* that minimizes ``χ²`` and the complete ``χ²`` matrix.
+Perform a `χ²` scan in the matrix of parameters `A` given the function `f` and the vectors `x` and `y` such that `y=f(x,A)+ϵ`. It returns the the best `A` that minimizes `χ²` and the complete `χ²` matrix.
 """
 function scan2D(f::Function, x::Array{<:Real}, y::Vector{<:Real}, σ::Vector{<:Real}, A::Matrix{Tuple{T, T}} where T <: Real)
 	#dims = size(A)
@@ -42,10 +42,10 @@ end
 
 """
 	(f::Matrix{<:Real}, y::Vector{<:Real})
-Computes the least-squares fit of ``y = a1 × f1 + a2 × f2 + ... + ap × fp`` where ``a1, a2, ..., ap`` are parameters and ``f1, f2, ..., fp`` functions of one or more independent variables.
-* ``f`` is the design matrix;
-* ``y`` is the target variable vector;
-The covariance matrix ``M`` and the parameters vector ``A`` are returned.
+Computes the least-squares fit of `y = a1 × f1 + a2 × f2 + ... + ap × fp` where `a1, a2, ..., ap` are parameters and `f1, f2, ..., fp` functions of one or more independent variables.
+- `f` is the design matrix;
+- `y` is the target variable vector;
+The covariance matrix `M` and the parameters vector `A` are returned.
 """
 function fitLinear(f::Matrix{<:Real}, y::Vector{<:Real})
 	dims = size(f)
@@ -67,7 +67,7 @@ precompile(fitLinear, (Matrix, Vector))
 
 """
 	(f::Matrix{<:Real}, y::Vector{<:Real}, w::Vector{<:Real})
-Same as above, with weights ``w``.
+Same as above, with weights `w`.
 """
 function fitLinear(f::Matrix{<:Real}, y::Vector{<:Real}, w::Vector{<:Real})
 	dims = size(f)
@@ -94,7 +94,7 @@ precompile(fitLinear, (Vector, Vector))
 
 """
 	(x::Vector{<:Real}, y::Vector{<:Real}, w::Vector{<:Real})
-The same as above, with weights ``w``.
+The same as above, with weights `w`.
 """
 function fitLinear(x::Vector{<:Real}, y::Vector{<:Real}, w::Vector{<:Real})
 	x = x .* sqrt.(w)
