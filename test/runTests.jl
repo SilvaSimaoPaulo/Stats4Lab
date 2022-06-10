@@ -1,8 +1,10 @@
 import Stats4Lab.RandomizedTests as RT
 import Stats4Lab.LeastSquares as LS
 import Stats4Lab.ANORE
+import Stats4Lab.BayesianRegression as BayesReg
 import Distributions as Dists
 using UnicodePlots
+using LinearAlgebra
 
 println("-"^79)
 println("RndomizedTests")
@@ -127,4 +129,22 @@ println("--->anore")
 a = ANORE.anore(R, T, TCalc, "L", "T")
 a.drawPlots()
 r² = 1 - Dists.var(R) / Dists.var(T)
+println("\nr² = $(r²)")
 
+println("-"^79)
+println("BayesianRegression")
+println("-"^79)
+println("--->priorPrediction")
+m₀ = zeros(6)
+S₀ = Matrix(0.25 * I(6))
+ϕ = [x->x ^ i for i=0:5]
+X = collect(LinRange(-5, 5, 200))
+p = []
+for x in X
+	Φ = [ϕ[i](x) for i = 1:6]
+	push!(p, BayesReg.priorPrediction(Φ, m₀, S₀, 0))
+end
+v = kron(X, ones(10))
+w = vec([rand(p[i], 10)[j] for j=1:10, i=1:200])
+plotPolinomials = scatterplot(v, w, xlabel="x", ylabel="y", xlim=(-4.5, 4.5), ylim=(-5, 5), width=60, height=18)
+print("\n", plotPolinomials, "\n")

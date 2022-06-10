@@ -14,7 +14,7 @@ Computes the probability `p(y|x)`, where `y = m₁ϕ₁(x₁) + m₂ϕ₂(x₂) 
 - `σ² = Var[y]`.
 """
 function priorPrediction(ϕ::Array{<:Real}, m₀::Vector{<:Real}, S₀::Matrix{<:Real}, σ²::Real)
-	ϕᵀ = tranpose(ϕ)
+	ϕᵀ = transpose(ϕ)
 	μ = ϕᵀ * m₀
 	Σ = ϕᵀ * S₀ * ϕ
 	N = Dists.Normal(μ, Σ + σ²)

@@ -58,7 +58,7 @@ struct anore #analysis of residuals
 		UnicodePlots.lineplot!(plotN, 0., 1., color=:red)
 
 		#autocorrelation
-		plotD = UnicodePlots.densityplot(R[1:nPoints-1], R[2:end], xlabel="Rᵢ", ylabel="Rᵢ₊₁", title="residuals lag-1 autocorrelation", width=60, height=18)
+		plotD = UnicodePlots.scatterplot(R[1:nPoints-1], R[2:end], xlabel="Rᵢ", ylabel="Rᵢ₊₁", title="Residuals lag-1 autocorrelation", marker="∘", width=60, height=18, canvas=UnicodePlots.DotCanvas)
 		
 		#Draw the plots
 		drawPlots() = begin
