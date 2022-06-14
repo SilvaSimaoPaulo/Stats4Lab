@@ -148,3 +148,29 @@ v = kron(X, ones(10))
 w = vec([rand(p[i], 10)[j] for j=1:10, i=1:200])
 plotPolinomials = scatterplot(v, w, xlabel="x", ylabel="y", xlim=(-4.5, 4.5), ylim=(-5, 5), width=60, height=18)
 print("\n", plotPolinomials, "\n")
+
+println("\n---posteriorPrediction")
+println("Fits a 3rd degree polynomial in a simulated sample (sine function + gaussian noisy).")
+x = collect(0.0:0.1:1.0)
+y = [sin(2π*x[i]) + 0.25 * randn() for i = 1:11]
+f = [x->1, x->x, x->x^2, x->x^3]
+Φ = [f[j](x[i]) for i = 1:11, j = 1:4] #design matrix
+m₀ = [0, 10, -30, 21] #initial parameters got from GoogleSheets
+S₀ = Matrix(I(4))
+σ² = 0.5
+upperLimit = Float64[]
+lowerLimit = Float64[]
+expected = Float64[]
+posteriori = []
+for i in 1:length(x)
+	local ϕ = [1, x[i], x[i] ^ 2, x[i] ^ 3]
+	N = BayesReg.posteriorPrediction(ϕ, Φ, y, m₀, S₀, σ²)
+	push!(posteriori, N)
+	push!(upperLimit, Dists.quantile(N, 0.84))
+	push!(lowerLimit, Dists.quantile(N, 0.16))
+	push!(expected, Dists.mean(N))
+end
+plotN = scatterplot(x, y, marker="∘", xlabel="x", ylabel="y", canvas=DotCanvas, width=54, height=21)
+lineplot!(plotN, x, upperLimit, color=:red, name="68% CL")
+lineplot!(plotN, x, lowerLimit, color=:red)
+lineplot!(plotN, x, expected, color=:blue, name="expected")

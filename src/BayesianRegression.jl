@@ -52,7 +52,7 @@ function posteriorPrediction(ϕ::Array{<:Real}, Φ::Array{<:Real}, y::Vector{<:R
 	mₙ = S₀⁻¹m₀ + (inv(σ²) * Φᵀy)
 	mₙ = Sₙ * mₙ
 	μ = transpose(ϕ) * mₙ
-	Σ = transpose(Φ) * Sₙ * Φ + σ²
+	Σ = transpose(ϕ) * Sₙ * ϕ + σ²
 	N = Dists.Normal(μ, Σ)
 	return N
 end
